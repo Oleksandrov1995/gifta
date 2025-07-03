@@ -51,64 +51,46 @@ export const Main = () => {
       greetingText: "",
     });
   };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  const submitData = new FormData();
+  submitData.append("person", formData.person);
+  // ... додаємо інші поля
 
-    const submitData = new FormData();
-    submitData.append("person", formData.person);
-    submitData.append("gender", formData.gender);
-    submitData.append("age", formData.age?.label || "");
-    submitData.append("greetingSubject", formData.greetingSubject);
-    submitData.append("hobbies", formData.hobbies);
-    submitData.append("appearanceDescription", formData.appearanceDescription);
-    submitData.append("cardStyle", formData.cardStyle);
-    submitData.append("greetingText", formData.greetingText);
-    if (formData.photoFile) {
-      submitData.append("photo", formData.photoFile);
-    }
-
-    try {
-      const response = await fetch(
-        "https://hook.eu2.make.com/o8eoc69ifeo4ne9pophf1io4q30wm23c",
-        {
-          method: "POST",
-          body: submitData,
-        }
-      );
-
-      if (response.ok) {
-        const blob = await response.blob();
-        const contentType = blob.type;
-
-        if (contentType.startsWith("image/")) {
-          const imageURL = URL.createObjectURL(blob);
-
-          const newWindow = window.open();
-          if (newWindow) {
-            newWindow.document.write(
-              `<html><head><title>Листівка</title></head><body style="margin:0"><img src="${imageURL}" style="width:100%;height:auto"/></body></html>`
-            );
-          } else {
-            alert("Не вдалося відкрити нову вкладку. Перевірте блокувальники.");
-          }
-
-          alert("Привітання надіслано успішно!");
-          handleReset();
-        } else {
-          alert("Отримано некоректне зображення.");
-        }
-      } else {
-        alert("Помилка при надсиланні. Спробуйте ще раз.");
+  try {
+    const response = await fetch(
+      "https://hook.eu2.make.com/o8eoc69ifeo4ne9pophf1io4q30wm23c",
+      {
+        method: "POST",
+        body: submitData,
       }
-    } catch (err) {
-      console.error("Помилка:", err);
-      alert("Щось пішло не так. Спробуйте пізніше.");
-    } finally {
-      setLoading(false);
+    );
+
+    const text = await response.text();
+    console.log("Відповідь сервера:", text);
+
+    if (text) {
+      const imageUrl = text.trim().replace(/^"+|"+$/g, "");
+      // Переходимо у тому ж вікні
+      window.location.href = imageUrl;
+      // Після переходу наступні рядки можуть не виконатися,
+      // бо сторінка перезавантажиться/перейде
+      // Але якщо потрібно — можна викликати alert або reset раніше
+      alert("Привітання надіслано успішно!");
+      handleReset();
+    } else {
+      alert("Посилання на зображення не знайдено у відповіді.");
     }
-  };
+  } catch (error) {
+    alert("Сталася помилка: " + error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   const showGreetingIdeas = () => {
     alert(
@@ -260,3 +242,4 @@ export const Main = () => {
     </div>
   );
 };
+
