@@ -30,10 +30,9 @@ export const optionsPerson = [
   { label: "Племінниця", gender: "Жінка" },
 ];
 
-
 export const ageOptions = Array.from({ length: 101 }, (_, i) => ({
   value: i,
-  label: `${i} років`,
+  label: i === 1 ? "1 рік" : `${i} років`,
 })).filter((opt) => opt.value > 0);
 
 export const optionsGreetingSubject = [
@@ -66,4 +65,11 @@ export const optionsHobbies = [
   "Вишивка",
   "Мода та стиль",
 ];
-export const cardStyleOptions = ['Мультяшний', 'Діловий', 'Техно', 'В стилі картини'];
+
+export const cardStyleOptions = [
+  "Мультяшний",
+  "Діловий",
+  "Техно",
+  "В стилі картини",
+];
+
